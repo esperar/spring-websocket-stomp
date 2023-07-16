@@ -1,40 +1,27 @@
 package esperer.websocket.config;
 
-import esperer.websocket.handler.WebSocketHandler;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.socket.config.annotation.EnableWebSocket;
-import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
-import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
-import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
+import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.web.socket.config.annotation.*;
 
-import java.util.Enumeration;
-import java.util.ResourceBundle;
 
 @Configuration
 @EnableWebSocketMessageBroker
-public class WebSocketConfiguration implements WebSocketConfigurer {
+public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer {
 
 
     @Override
-    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry
-                .addHandler(signalingWebSocketHandler(), "/room")
-                .setAllowedOrigins("*");
+    public void configureMessageBroker(MessageBrokerRegistry registry) {
+        registry.setApplicationDestinationPrefixes("/pub")
+                .enableStompBrokerRelay("localhost")
+                .setVirtualHost("/")
+                .setRelayPort(61613)
+                .setClientLogin("guest")
+                .setClientPasscode("guest");
     }
 
-    @Bean
-    public WebSocketHandler signalingWebSocketHandler() {
-        return new WebSocketHandler(new ResourceBundle() {
-            @Override
-            protected Object handleGetObject(String key) {
-                return null;
-            }
-
-            @Override
-            public Enumeration<String> getKeys() {
-                return null;
-            }
-        });
+    @Override
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
+        registry.addEndpoint("/ws").setAllowedOrigins("*");
     }
 }

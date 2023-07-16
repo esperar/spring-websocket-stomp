@@ -1,4 +1,4 @@
-package esperer.websocket.message;
+package esperer.websocket;
 
 import lombok.*;
 

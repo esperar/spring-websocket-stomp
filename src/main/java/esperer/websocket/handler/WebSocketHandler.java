@@ -1,6 +1,6 @@
 package esperer.websocket.handler;
 
-import esperer.websocket.message.Message;
+import esperer.websocket.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.*;

@@ -1,8 +1,10 @@
 package esperer.websocket.controller;
 
-import esperer.websocket.message.Message;
+import esperer.websocket.Message;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 
@@ -17,8 +19,9 @@ public class MessageController {
      *  /pub/hello - 메시지 발행
      */
     @MessageMapping("/hello")
-    public void message(Message message) {
-        simpSimpMessageSendingOperations.convertAndSend("/sub/channel/" + message.getChannelId(), message);
+    public void message(@Payload Message message, SimpMessageHeaderAccessor headerAccessor) {
+        headerAccessor.getSessionAttributes().put("username", message.getSender());
+        simpSimpMessageSendingOperations.convertAndSend("/topic/" + message.getChannelId(), message);
     }
 
 }
