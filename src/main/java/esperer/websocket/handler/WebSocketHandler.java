@@ -1,17 +1,20 @@
 package esperer.websocket.handler;
 
 import esperer.websocket.Message;
-import jdk.jshell.execution.Util;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.StringUtils;
 import org.springframework.web.socket.*;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
+@RequiredArgsConstructor
 public class WebSocketHandler extends TextWebSocketHandler {
+
+    private final ResourceBundle resourceBundle;
 
     private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
 
@@ -42,7 +45,15 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     // 양방향 데이터 통신
     @Override
-    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+    protected void handleTextMessage(WebSocketSession session, TextMessage textMessage) throws Exception {
+        Message message = (Message) resourceBundle.getObject(textMessage.getPayload());
+        message.setSender(session.getId());
+
+        WebSocketSession receiver = sessions.get(message.getReceiver());
+
+        if(receiver != null && receiver.isOpen()) {
+            receiver.sendMessage(new TextMessage(message.toString()));
+        }
 
     }
 
