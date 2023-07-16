@@ -1,11 +1,10 @@
 package esperer.websocket.handler;
 
-import esperer.websocket.Message;
+import esperer.websocket.message.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.*;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,7 +26,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
         Message message = Message.builder()
                 .sender(sessionId)
-                .receiver("all")
+                .channelId("all")
                 .build();
         message.newConnector();
 
@@ -49,7 +48,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
         Message message = (Message) resourceBundle.getObject(textMessage.getPayload());
         message.setSender(session.getId());
 
-        WebSocketSession receiver = sessions.get(message.getReceiver());
+        WebSocketSession receiver = sessions.get(message.getChannelId());
 
         if(receiver != null && receiver.isOpen()) {
             receiver.sendMessage(new TextMessage(message.toString()));

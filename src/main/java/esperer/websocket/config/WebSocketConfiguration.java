@@ -4,11 +4,15 @@ import esperer.websocket.handler.WebSocketHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
+import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
+import java.util.Enumeration;
+import java.util.ResourceBundle;
+
 @Configuration
-@EnableWebSocket
+@EnableWebSocketMessageBroker
 public class WebSocketConfiguration implements WebSocketConfigurer {
 
 
@@ -21,6 +25,16 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
 
     @Bean
     public WebSocketHandler signalingWebSocketHandler() {
-        return new WebSocketHandler();
+        return new WebSocketHandler(new ResourceBundle() {
+            @Override
+            protected Object handleGetObject(String key) {
+                return null;
+            }
+
+            @Override
+            public Enumeration<String> getKeys() {
+                return null;
+            }
+        });
     }
 }
