@@ -66,6 +66,21 @@ public class WebSocketHandler extends TextWebSocketHandler {
     // 소켓 통신
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        super.afterConnectionClosed(session, status);
+
+        var sessionId = session.getId();
+
+        sessions.remove(sessionId);
+
+        final Message message = new Message();
+        message.closeConnector();
+        message.setSender(sessionId);
+
+        sessions.values().forEach(s -> {
+            try {
+                s.sendMessage(new TextMessage(message.toString()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 }
